@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { FaSearch, FaBriefcase, FaMapMarkerAlt, FaUserCircle, FaSignOutAlt } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';  // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 import Salary from './Salary';
-import LocationList from './apply'; // Import the LocationList component
 import image from '../assets/image.jpeg';
 import images from '../assets/images.jpeg';
 import just from '../assets/just.webp';
@@ -14,20 +13,11 @@ const Home = () => {
   const [searchLocation, setSearchLocation] = useState('');
   const [filteredJobs, setFilteredJobs] = useState([]);
   const [submitted, setSubmitted] = useState(false);
-  const [showLocationList, setShowLocationList] = useState(false); // Control the visibility of the location list
-  const navigate = useNavigate(); // Initialize the navigate function
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     window.location.href = '/login';
-  };
-
-  const handleChange = (e) => {
-    console.log('Changed:', e.target.value);
-  };
-
-  const handleClick = (e) => {
-    console.log('Clicked:', e.target.value);
   };
 
   const jobs = [
@@ -50,25 +40,16 @@ const Home = () => {
 
   const jobsToDisplay = submitted ? filteredJobs : jobs;
 
-  const handleLocationSelect = (location) => {
-    setSearchLocation(location);
-    setShowLocationList(false); // Hide the location list after selection
-    handleSearchSubmit({ preventDefault: () => {} }); // Trigger the search when a location is selected
-  };
-
-  // Function to navigate to the apply page
   const handleApplyNowClick = () => {
-    navigate('/apply/:jobId'); // Navigate to the apply page
+    navigate('/apply/:jobId');
   };
 
-  // Function to navigate to My Jobs page
   const handleMyJobClick = () => {
-    navigate('/my-jobs'); // Navigate to the My Jobs page
+    navigate('/my-jobs');
   };
 
-  // Function to navigate to Create Job page
   const handleCreateJobClick = () => {
-    navigate('/create-job'); // Navigate to the Create Job page
+    navigate('/create-job');
   };
 
   return (
@@ -76,34 +57,32 @@ const Home = () => {
       {/* Navbar */}
       <nav className="flex justify-between items-center mb-12">
         <div className="flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" width="29" height="30" viewBox="0 0 29 30" fill="none">
-            <circle cx="12.0143" cy="12.5143" r="12.0143" fill="#FFA500" fillOpacity="0.4" />
-            <circle cx="16.9857" cy="17.4857" r="12.0143" fill="#FFA500" />
-          </svg>
+        <svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="29"
+  height="30"
+  viewBox="0 0 29 30"
+  fill="none"
+  className="text-purple-800"
+>
+  <circle cx="12.0143" cy="12.5143" r="12.0143" fill="currentColor" fillOpacity="0.4" />
+  <circle cx="16.9857" cy="17.4857" r="12.0143" fill="currentColor" />
+</svg>
+
           <h1 className="text-3xl font-semibold text-white ml-4">JobPortal</h1>
         </div>
         <div className="flex items-center space-x-6">
-          <button className="flex items-center text-white" onClick={handleMyJobClick}>
-            My Jobs
-          </button>
-          <button className="flex items-center text-white" onClick={handleCreateJobClick}>
-            Create Job
-          </button>
-          <button className="flex items-center text-white">
-            <FaUserCircle className="mr-2" /> Profile
-          </button>
-          <button className="flex items-center text-white" onClick={handleLogout}>
-            <FaSignOutAlt className="mr-2" /> Logout
-          </button>
+          <button className="flex items-center text-white" onClick={handleMyJobClick}>My Jobs</button>
+          <button className="flex items-center text-white" onClick={handleCreateJobClick}>Create Job</button>
+          <button className="flex items-center text-white"><FaUserCircle className="mr-2" /> Profile</button>
+          <button className="flex items-center text-white" onClick={handleLogout}><FaSignOutAlt className="mr-2" /> Logout</button>
         </div>
       </nav>
 
       {/* Header */}
       <header className="text-center mb-12">
         <h1 className="text-4xl md:text-5xl font-bold mb-4">Find Your Dream Job</h1>
-        <p className="text-lg text-purple-200">
-          Search for jobs, internships, or freelance gigs across different industries.
-        </p>
+        <p className="text-lg text-purple-200">Search for jobs, internships, or freelance gigs across different industries.</p>
       </header>
 
       {/* Search Section */}
@@ -122,15 +101,11 @@ const Home = () => {
             <FaMapMarkerAlt className="absolute top-1/2 left-3 transform -translate-y-1/2 text-purple-400" />
             <input
               type="text"
-              placeholder="Location"
+              placeholder="Enter location"
               value={searchLocation}
-              onFocus={() => setShowLocationList(true)} // Show the location list when the input is focused
               onChange={(e) => setSearchLocation(e.target.value)}
               className="w-full pl-10 pr-4 py-2 rounded-xl bg-white/20 text-white placeholder-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
-            {showLocationList && (
-              <LocationList onSelectLocation={handleLocationSelect} />
-            )}
           </div>
           <button
             type="submit"
@@ -143,7 +118,7 @@ const Home = () => {
 
       {/* Salary Section */}
       <div className="max-w-3xl mx-auto bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg p-6 mb-10">
-        <Salary handleChange={handleChange} handleClick={handleClick} />
+        <Salary />
       </div>
 
       {/* Job Listings */}
@@ -158,11 +133,7 @@ const Home = () => {
               key={idx}
               className="w-full md:w-[48%] lg:w-[30%] bg-white/10 backdrop-blur-sm border border-white/10 rounded-xl p-5 hover:bg-white/20 transition-all duration-300 flex flex-col gap-4"
             >
-              <img
-                src={job.img}
-                alt={`${job.title} logo`}
-                className="w-full h-40 object-cover rounded-lg"
-              />
+              <img src={job.img} alt={`${job.title} logo`} className="w-full h-40 object-cover rounded-lg" />
               <div>
                 <h3 className="text-xl font-bold">{job.title}</h3>
                 <p className="text-purple-200">{job.company}</p>

@@ -3,13 +3,14 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Register from "./component/Register";
 import Home from "./page/Home";
 import Login from "./component/Login"; // Add this import for the Login component
- import Salary from "./page/Salary";
+import Salary from "./page/Salary";
 import Apply from "./page/Apply";
 import CreateJob from "./page/Createjob";
 import MyJob from "./page/myJob";
+import EditJob from "./component/Edit"; // Corrected path for EditJob
 // import LocationList from "./page/apply";
-//  import Button from "./component/Button";
-//  import Input from "./component/Input"
+// import Button from "./component/Button";
+// import Input from "./component/Input";
 
 const App = () => {
   return (
@@ -19,12 +20,13 @@ const App = () => {
         <Route path="/register" element={<Register />} /> {/* Register page route */}
         <Route path="/login" element={<Login />} />
         <Route path="/salary" element={<Salary />} />
-        <Route path="/apply/:jobId" element={<Apply/>} />
+        <Route path="/apply/:jobId" element={<Apply />} />
         <Route path="/create-job" element={<CreateJob />} />
         <Route path="/my-jobs" element={<MyJob />} />
+        <Route path="/edit-job/:jobId" element={<EditJob />} /> {/* Updated EditJob route */}
         {/* <Route path="/location" element={<LocationList/>} /> */}
         {/* <Route path="/button" element={<Button />} />  */}
-        {/* <Route path="/input" element={<Input/>} />   Login page route */}
+        {/* <Route path="/input" element={<Input/>} /> */}
       </Routes>
     </Router>
   );

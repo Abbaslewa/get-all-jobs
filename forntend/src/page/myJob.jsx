@@ -1,5 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+// Utility function to get token from localStorage
+const getToken = () => localStorage.getItem('token');
 
 const MyJobs = () => {
   const navigate = useNavigate();
@@ -7,44 +10,79 @@ const MyJobs = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        const token = localStorage.getItem('authToken');
-        const userId = localStorage.getItem('userId'); // Make sure this is saved during login
+  // Fetch jobs with the useCallback hook to avoid unnecessary re-fetching
+  const fetchJobs = useCallback(async () => {
+    const token = getToken();
+    if (!token) {
+      navigate('/login');
+      return;
+    }
 
-        if (!token || !userId) {
-          navigate('/login'); // Redirect if no token or user ID
-          return;
-        }
+    try {
+      const response = await fetch('http://localhost:5000/api/jobs', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
 
-        const response = await fetch('/api/jobs', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch jobs');
-        }
-
-        const data = await response.json();
-
-        // 🧠 Filter jobs created by the current user
-        const myJobs = data.filter((job) => job.createdBy === userId);
-
-        setJobs(myJobs);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+      if (response.status === 401) {
+        localStorage.clear();
+        navigate('/login');
+        return;
       }
-    };
 
-    fetchJobs();
+      if (!response.ok) throw new Error('Failed to fetch jobs');
+
+      const data = await response.json();
+      setJobs(data);
+    } catch (err) {
+      setError(err.message || 'Something went wrong');
+    } finally {
+      setLoading(false);
+    }
   }, [navigate]);
+
+  useEffect(() => {
+    fetchJobs();
+    localStorage.removeItem('newJobCreated');
+  }, [fetchJobs]);
+
+  // Redirect to the edit page for a job
+  const handleEdit = (jobId) => navigate(`/edit-job/${jobId}`);
+
+  // Delete job with optimistic UI update
+  const handleDelete = async (jobId) => {
+    const token = getToken();
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+
+    const confirmed = window.confirm('Are you sure you want to delete this job?');
+    if (!confirmed) return;
+
+    try {
+      // Optimistically remove the job from the state
+      setJobs((prevJobs) => prevJobs.filter((job) => job._id !== jobId));
+
+      const response = await fetch(`http://localhost:5000/api/jobs/${jobId}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) throw new Error('Failed to delete job');
+
+      // Fetch jobs again to update the job list
+      fetchJobs();
+    } catch (err) {
+      setError(err.message || 'Failed to delete job');
+      fetchJobs(); // Revert optimistic deletion
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-800 px-4 py-10">
@@ -76,6 +114,7 @@ const MyJobs = () => {
                   <th className="px-4 py-3 text-left">Location</th>
                   <th className="px-4 py-3 text-left">Type</th>
                   <th className="px-4 py-3 text-left">Salary</th>
+                  <th className="px-4 py-3 text-left">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white/10 divide-y divide-white/20">
@@ -85,6 +124,10 @@ const MyJobs = () => {
                       <img
                         src={job.image || 'https://via.placeholder.com/50'}
                         alt={job.title}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = 'https://via.placeholder.com/50';
+                        }}
                         className="w-10 h-10 rounded"
                       />
                     </td>
@@ -92,7 +135,23 @@ const MyJobs = () => {
                     <td className="px-4 py-3">{job.company}</td>
                     <td className="px-4 py-3">{job.location}</td>
                     <td className="px-4 py-3">{job.jobType}</td>
-                    <td className="px-4 py-3">{job.salary}</td>
+                    <td className="px-4 py-3">
+                      ${Number(job.salary).toLocaleString()}
+                    </td>
+                    <td className="px-4 py-3">
+                      <button
+                        onClick={() => handleEdit(job._id)}
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1 px-3 rounded-lg mr-2"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(job._id)}
+                        className="bg-red-600 hover:bg-red-700 text-white font-semibold py-1 px-3 rounded-lg"
+                      >
+                        Delete
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>

@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
-import { jwtDecode } from 'jwt-decode'; // Correct named import
- // ✅ Correct import
+import { jwtDecode } from 'jwt-decode';
 
-const CreateJob = () => {
+const EditJob = () => {
   const navigate = useNavigate();
+  const { id } = useParams(); // Get the job ID from the URL
   const [job, setJob] = useState({
     title: '',
     company: '',
@@ -16,6 +16,32 @@ const CreateJob = () => {
   });
 
   const [loading, setLoading] = useState(false);
+
+  // Fetch the job data if editing an existing job
+  useEffect(() => {
+    if (id) {
+      const fetchJob = async () => {
+        try {
+          const token = localStorage.getItem('token');
+          if (!token) {
+            return navigate('/login');
+          }
+
+          const response = await axios.get(`http://localhost:5000/api/jobs/${id}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          setJob(response.data); // Set job data for editing
+        } catch (error) {
+          console.error('Error fetching job:', error.response || error.message);
+        }
+      };
+
+      fetchJob();
+    }
+  }, [id, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -32,7 +58,7 @@ const CreateJob = () => {
   
     const token = localStorage.getItem('token');
     if (!token) {
-      return alert('You must be logged in to create a job.');
+      return alert('You must be logged in to create or edit a job.');
     }
   
     let userId;
@@ -48,37 +74,52 @@ const CreateJob = () => {
     setLoading(true);
   
     try {
-      const response = await axios.post(
-        'http://localhost:5000/api/jobs/create',
-        {
-          ...job,
-          salary: sanitizedSalary,
-          userId,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-  
-      if (response.status === 201) {
-        console.log('Job created:', response.data);
-        navigate('/');
+      const response = id
+        ? await axios.put(
+            `http://localhost:5000/api/jobs/${id}`,
+            {
+              ...job,
+              salary: sanitizedSalary,
+              userId,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          )
+        : await axios.post(
+            'http://localhost:5000/api/jobs/create',
+            {
+              ...job,
+              salary: sanitizedSalary,
+              userId,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+      if (response.status === 200 || response.status === 201) {
+        console.log('Job saved:', response.data);
+        navigate('/'); // Redirect to homepage after success
       }
     } catch (error) {
-      console.error('Error posting job:', error.response || error.message);
-      alert(error.response?.data?.message || 'There was an error creating the job.');
+      console.error('Error saving job:', error.response || error.message);
+      alert(error.response?.data?.message || 'There was an error saving the job.');
     } finally {
       setLoading(false);
     }
   };
-  
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-800 px-4 py-10">
       <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-lg p-8 w-full max-w-2xl">
-        <h2 className="text-3xl font-bold text-white mb-6 text-center">Create a New Job</h2>
+        <h2 className="text-3xl font-bold text-white mb-6 text-center">
+          {id ? 'Edit Job' : 'Create a New Job'}
+        </h2>
 
         <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-5">
           {[
@@ -119,7 +160,7 @@ const CreateJob = () => {
             className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 rounded-xl transition-all duration-300"
             disabled={loading}
           >
-            {loading ? 'Posting Job...' : 'Post Job'}
+            {loading ? 'Saving Job...' : id ? 'Save Changes' : 'Post Job'}
           </button>
         </form>
 
@@ -136,4 +177,4 @@ const CreateJob = () => {
   );
 };
 
-export default CreateJob;
+export default EditJob;
