@@ -63,7 +63,7 @@ const Home = () => {
   height="30"
   viewBox="0 0 29 30"
   fill="none"
-  className="text-purple-800"
+  className="text-purple-600"
 >
   <circle cx="12.0143" cy="12.5143" r="12.0143" fill="currentColor" fillOpacity="0.4" />
   <circle cx="16.9857" cy="17.4857" r="12.0143" fill="currentColor" />
