@@ -7,7 +7,8 @@ import Salary from "./page/Salary";
 import Apply from "./page/Apply";
 import CreateJob from "./page/Createjob";
 import MyJob from "./page/myJob";
-import EditJob from "./component/Edit"; // Corrected path for EditJob
+import EditJob from "./component/Edit";
+import MyApply from "./page/myApply"; // Corrected path for EditJob
 // import LocationList from "./page/apply";
 // import Button from "./component/Button";
 // import Input from "./component/Input";
@@ -23,7 +24,8 @@ const App = () => {
         <Route path="/apply/:jobId" element={<Apply />} />
         <Route path="/create-job" element={<CreateJob />} />
         <Route path="/my-jobs" element={<MyJob />} />
-        <Route path="/edit-job/:jobId" element={<EditJob />} /> {/* Updated EditJob route */}
+        <Route path="/edit-job/:jobId" element={<EditJob />} /> 
+        <Route path="/myapply" element={<MyApply />} /> {/* Updated EditJob route */}
         {/* <Route path="/location" element={<LocationList/>} /> */}
         {/* <Route path="/button" element={<Button />} />  */}
         {/* <Route path="/input" element={<Input/>} /> */}
