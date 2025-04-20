@@ -60,29 +60,33 @@ const Home = () => {
     <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-800 text-white px-4 py-10">
       {/* Navbar */}
       <nav className="flex justify-between items-center mb-12">
-        <div className="flex items-center">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="29"
-            height="30"
-            viewBox="0 0 29 30"
-            fill="none"
-            className="text-purple-600"
-          >
-            <circle cx="12.0143" cy="12.5143" r="12.0143" fill="currentColor" fillOpacity="0.4" />
-            <circle cx="16.9857" cy="17.4857" r="12.0143" fill="currentColor" />
-          </svg>
-
-          <h1 className="text-3xl font-semibold text-white ml-4">JobPortal</h1>
-        </div>
-        <div className="flex items-center space-x-6">
-          <button className="flex items-center text-white" onClick={handleMyJobClick}>My Jobs</button>
-          <button className="flex items-center text-white" onClick={handleCreateJobClick}>Create Job</button>
-          <button className="flex items-center text-white" onClick={handleMyApplyClick}>My Apply</button> {/* Added My Apply button */}
-          <button className="flex items-center text-white"><FaUserCircle className="mr-2" /> Profile</button>
-          <button className="flex items-center text-white" onClick={handleLogout}><FaSignOutAlt className="mr-2" /> Logout</button>
-        </div>
-      </nav>
+  <div className="flex items-center">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="29"
+      height="30"
+      viewBox="0 0 29 30"
+      fill="none"
+      className="text-purple-600"
+    >
+      <circle cx="12.0143" cy="12.5143" r="12.0143" fill="currentColor" fillOpacity="0.4" />
+      <circle cx="16.9857" cy="17.4857" r="12.0143" fill="currentColor" />
+    </svg>
+    <h1 className="text-3xl font-semibold text-white ml-4">JobPortal</h1>
+  </div>
+  <div className="flex items-center space-x-6">
+    <button className="flex items-center text-white" onClick={handleMyJobClick}>My Jobs</button>
+    <button className="flex items-center text-white" onClick={handleCreateJobClick}>Create Job</button>
+    <button className="flex items-center text-white" onClick={handleMyApplyClick}>My Apply</button>
+    <span className="text-white font-semibold">It&apos;s me</span>
+    <button className="flex items-center text-white" onClick={() => navigate('/profile')}>
+      <FaUserCircle className="mr-2" /> Profile
+    </button>
+    <button className="flex items-center text-white" onClick={handleLogout}>
+      <FaSignOutAlt className="mr-2" /> Logout
+    </button>
+  </div>
+</nav>
 
       {/* Header */}
       <header className="text-center mb-12">
